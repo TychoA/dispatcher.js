@@ -5,86 +5,86 @@
  *  can trigger events on that object. Others
  *  can listen to those events.
  *
- *	@author         Tycho Atsma  <tycho.atsma@gmail.com>
+ *  @author         Tycho Atsma  <tycho.atsma@gmail.com>
  *  @file           Dispatcher.js
  *  @documentation  public
  */
 const Dispatcher = function (context) {
 	
-	/**
-	 *  The event container
-     * 
-	 *  @var  object
-	 */
-	const events = { };
-    
     /**
-     *  A bubbler context
-     *
-     *  @var  mixed
-     */
+      *  The event container
+      * 
+      *  @var  object
+      */
+     const events = { };
+
+    /**
+      *  A bubbler context
+      *
+      *  @var  mixed
+      */
     let bubbler;
 
-	/**
-	 *  Function that adds an event listener to a given context
-	 *
-	 *  @param   string    the name of the event
-	 *  @param   function  callback fired when the event is triggered
+    /**
+      *  Function that adds an event listener to a given context
+      *
+      *  @param   string    the name of the event
+      *  @param   function  callback fired when the event is triggered
+      *  @return  void
+      */
+    const addListener = function (name, callback) {
+
+	// do we already have this event installed?
+	if (!events.hasOwnProperty(name)) events[name] = [];
+
+	// install the callback
+	events[name].push(callback);
+     };
+
+   /**
+     *  Function that removes an event listener of a given context
+     *
+     *  @param   string    the name of the event
+     *  @param   function  callback fired when the event is triggered	
      *  @return  void
-	 */
-	const addListener = function (name, callback) {
+     */
+    const removeListener = function (name, callback) {
 
-		// do we already have this event installed?
-		if (!events.hasOwnProperty(name)) events[name] = [];
+	// do we event have events?
+	if (!events[name]) return; 
 
-		// install the callback
-		events[name].push(callback);
-	};
+	// is a callback provided?
+	else if (!callback) events[name] = [];
 
-	/**
-	 *  Function that removes an event listener of a given context
-	 *
-	 *  @param   string    the name of the event
-	 *  @param   function  callback fired when the event is triggered	
+	// otherwise just remove the callback from the list
+	else {
+
+		// filter the array of callbacks
+		events[name] = events[name].filter(cb => cb !== callback);
+        }
+    };
+
+    /**
+     *  Function that triggers an event listener within a given context
+     *
+     *  @param   $.Event  jQuery event that can contain data
      *  @return  void
-	 */
-	const removeListener = function (name, callback) {
+     */
+    const triggerEventListener = function ($event) {
 
-		// do we event have events?
-		if (!events[name]) return; 
-		
-		// is a callback provided?
-		else if (!callback) events[name] = [];
+	// get the event name
+	const name = $event.type;
 
-		// otherwise just remove the callback from the list
-		else {
+	// see if we have this event installed
+	if (!events.hasOwnProperty(name)) return;
 
-			// filter the array of callbacks
-			events[name] = events[name].filter(cb => cb !== callback);
-		}
+	// loop through the events
+	for (let i = 0; i < events[name].length; i++) {
+
+            // fire the installed callbacks with the event as argument
+	    events[name][i]($event);
 	};
-
-	/**
-	 *  Function that triggers an event listener within a given context
-	 *
-	 *  @param   $.Event  jQuery event that can contain data
-     *  @return  void
-	 */
-	const triggerEventListener = function ($event) {
-		
-        // get the event name
-		const name = $event.type;
-
-		// see if we have this event installed
-		if (!events.hasOwnProperty(name)) return;
-
-		// loop through the events
-		for (let i = 0; i < events[name].length; i++) {
-
-			// fire the installed callbacks with the event as argument
-			events[name][i]($event);
-		};
-	};
+    };
 
     /**
      *  Function that can bubble the events of one context to another
@@ -108,9 +108,9 @@ const Dispatcher = function (context) {
         if (bubbler) bubbler.trigger($event);
     };
 
-	// easy-to-access function shortcuts
-	context.on = addListener.bind(this);
-	context.off = removeListener.bind(this);
-	context.trigger = this.trigger.bind(this);
+    // easy-to-access function shortcuts
+    context.on = addListener.bind(this);
+    context.off = removeListener.bind(this);
+    context.trigger = this.trigger.bind(this);
     context.bubbleTo = bubbleTo.bind(this);
 };
