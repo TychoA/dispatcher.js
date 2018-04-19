@@ -1,5 +1,4 @@
-# dispatcher.js
- # Dispatcher.js
+# Dispatcher.js
  
  A simple, but effective client-side events dispatcher.
  Install the dispatcher on any object by calling its
@@ -25,24 +24,22 @@ of Foo:
 ```javascript
 foo.on('event', console.log);
 ```
-on
-~~~
 Install a new callback handler on an event name.
 
 ```javascript
 foo.off('event', console.log);
 ```
-off
-~~~
 Uninstall a callback handler of an event name.
 
 ```javascript
 const Bar = function () {
+    
+    // construct a new dispatcher
+    const dispatcher = new Dispatcher(this);
+
+    // propagate foo events to Bar
     foo.propagateTo(this);
 };
-```
-propagateTo
-~~~
 Propagate events from one dispatcher to another.
 The new context is required to also construct a
 dispatcher. This method will not do that on its
@@ -51,6 +48,4 @@ own, it simply connects the two.
 ```javascript
 dispatcher.trigger('event', { foo: 'bar' });
 ```
-trigger
-~~~
 Trigger an event name with optional parameters.
