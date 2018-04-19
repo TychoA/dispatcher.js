@@ -1,18 +1,56 @@
 # dispatcher.js
-A simple, but effective client side event dispatcher that relies on the jQuery $.Event object.
-However, you can easily replace that with your own implementation.
+ # Dispatcher.js
+ 
+ A simple, but effective client-side events dispatcher.
+ Install the dispatcher on any object by calling its
+ constructor provided with the context.
 
-## Usage
-Initialize the dispatcher in your desired component like:
 ```javascript
-const dispatcher = new Dispatcher(this);
-```
-Providing the ```this``` context will install the dispatcher interface on that context.
-To trigger an event, you can invoke the ```.trigger($.Event())``` method.
+const Foo = function () {
 
-## Event handling
-To listen to an event and install a callback handler you can make use of the ```.on('eventName', callback)``` interface.
-Let's say you have installed a dispatcher on object **Foo**. In object **Bar**, you initialize Foo as ```const foo = new Foo();```.
-Our foo triggers, at some point in time, the **bar** event. To listen to that event, we can say ```foo.on('bar', event => {
-  // ... event handling
-});```.
+    // construct a new dispatcher
+    const dispatcher = new Dispatcher(this);
+
+    // trigger a new event
+    dispatcher.trigger('event', { foo: 'bar' });
+};
+
+// construct a new instance of foo
+const foo = new Foo();
+ ```
+
+Doing so will install the following methods on an instance 
+of Foo:
+
+```javascript
+foo.on('event', console.log);
+```
+on
+~~~
+Install a new callback handler on an event name.
+
+```javascript
+foo.off('event', console.log);
+```
+off
+~~~
+Uninstall a callback handler of an event name.
+
+```javascript
+const Bar = function () {
+    foo.propagateTo(this);
+};
+```
+propagateTo
+~~~
+Propagate events from one dispatcher to another.
+The new context is required to also construct a
+dispatcher. This method will not do that on its
+own, it simply connects the two.
+
+```javascript
+dispatcher.trigger('event', { foo: 'bar' });
+```
+trigger
+~~~
+Trigger an event name with optional parameters.
