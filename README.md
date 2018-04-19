@@ -1,4 +1,3 @@
-# dispatcher.js
  # Dispatcher.js
  
  A simple, but effective client-side events dispatcher.
