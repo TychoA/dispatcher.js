@@ -21,16 +21,20 @@ const foo = new Foo();
 Doing so will install the following methods on an instance 
 of Foo:
 
+Install a new callback handler on an event name.
 ```javascript
 foo.on('event', console.log);
 ```
-Install a new callback handler on an event name.
 
+Uninstall a callback handler of an event name.
 ```javascript
 foo.off('event', console.log);
 ```
-Uninstall a callback handler of an event name.
 
+Propagate events from one dispatcher to another.
+The new context is required to also construct a
+dispatcher. This method will not do that on its
+own, it simply connects the two.
 ```javascript
 const Bar = function () {
     
@@ -40,12 +44,9 @@ const Bar = function () {
     // propagate foo events to Bar
     foo.propagateTo(this);
 };
-Propagate events from one dispatcher to another.
-The new context is required to also construct a
-dispatcher. This method will not do that on its
-own, it simply connects the two.
+```
 
+Trigger an event name with optional parameters.
 ```javascript
 dispatcher.trigger('event', { foo: 'bar' });
 ```
-Trigger an event name with optional parameters.
